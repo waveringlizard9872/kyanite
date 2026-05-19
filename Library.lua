@@ -42,16 +42,46 @@ local TEXT_SIZE = 11;
 local SYMBOL_TEXT_SIZE = 12;
 local TAB_HEIGHT = 26;
 local TWEEN_TIME = 0.12;
+local TAHOMA_BOLD_URL = "https://raw.githubusercontent.com/waveringlizard9872/kyanite/main/Tahoma_Bold.ttf";
+local TAHOMA_BOLD_FOLDER = "PinkVisualsUILibrary";
+local TAHOMA_BOLD_PATH = TAHOMA_BOLD_FOLDER .. "/Tahoma_Bold.ttf";
 
 local BaseFont = Enum.Font.SourceSansBold;
 pcall(function()
 	BaseFont = Enum.Font.ArialBold;
 end);
 
-local TahomaBold;
-pcall(function()
-	TahomaBold = Font.fromName("Tahoma", Enum.FontWeight.Bold);
-end);
+local function resolveTahomaBold()
+	local ok, font = pcall(function()
+		if (isfolder and makefolder and not isfolder(TAHOMA_BOLD_FOLDER)) then
+			makefolder(TAHOMA_BOLD_FOLDER);
+		end
+
+		if (isfile and writefile and getcustomasset) then
+			if (not isfile(TAHOMA_BOLD_PATH)) then
+				writefile(TAHOMA_BOLD_PATH, game:HttpGet(TAHOMA_BOLD_URL));
+			end
+
+			return Font.new(getcustomasset(TAHOMA_BOLD_PATH), Enum.FontWeight.Bold);
+		end
+	end);
+
+	if (ok) and (font) then
+		return font;
+	end
+
+	ok, font = pcall(function()
+		return Font.fromName("Tahoma", Enum.FontWeight.Bold);
+	end);
+
+	if (ok) then
+		return font;
+	end
+
+	return nil;
+end
+
+local TahomaBold = resolveTahomaBold();
 
 local Window = { };
 Window.__index = Window;
